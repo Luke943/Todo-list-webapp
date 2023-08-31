@@ -1,7 +1,7 @@
 ## Fast API test project
 TODO web app built using Fast API.
 
-To start server: `uvicorn main:app --reload`
+To start server: `uvicorn sql_app.main:app --reload`
 
 1. Plain Python
 2. Async built-in
@@ -11,8 +11,8 @@ To start server: `uvicorn main:app --reload`
 6. Authentication built-in
 7. Auto docs: http://localhost:8000/docs
 
-## Further additios
-async def get_todos():
+## Further additions
+
 - Set up SQL database (or just simple json) to persist fast API data
 - Build React app to talk to API and pull/post/update data
 

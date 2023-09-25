@@ -28,8 +28,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
-        user_data = user.dict(exclude_unset=True)
-        for key in user_data.items():
+        user_data = user.model_dump(exclude_unset=True)
+        for key, value in user_data.items():
             setattr(db_user, key, value)
         db.add(db_user)
         db.commit()
@@ -49,7 +49,7 @@ def delete_user(db: Session, user_id: int):
 
 
 def create_user_todoitem(db: Session, item: schemas.TodoItemCreate, user_id: int):
-    db_item = models.TodoItem(**item.dict(), owner_id=user_id)
+    db_item = models.TodoItem(**item.model_dump(), owner_id=user_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)

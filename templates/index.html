@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js">
+    </script>
+</head>
+
+<body>
+    <div style="margin-top: 50px;" class="ui container">
+
+        <h1 class="ui center aligned header">
+            <img src="/images/todolist.svg" alt="Todo image"> To Do App
+        </h1><br><br>
+
+        <grid class="ui two column centered grid">
+            <form class="ui form border-1" action="/add" method="post"><br>
+                <label>Enter your login details</label><br><br>
+                <div class="field">
+                    <input type="text" name="title" placeholder="Username">
+                </div>
+                <div class="field">
+                    <input type="text" name="title" placeholder="Password"><br>
+                </div><br>
+                <div class="ui grid">
+                    <label>
+                        <input class="ui checkbox" type="checkbox" checked="checked" name="remember"> Remember me
+                    </label>
+                    <label>
+                        <a href="#!">Forgot Password?</a>
+                    </label>
+                </div><br><br>
+                <button class="fluid ui blue button" type="submit">Login</button><br>
+                <label>
+                    Not a member? <a href="#!">Register</a>
+                </label><br><br>
+            </form>
+        </grid>
+</body>
+
+</html>

@@ -1,4 +1,7 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -7,6 +10,9 @@ from .database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/images", StaticFiles(directory="images"), name="images")
+templates = Jinja2Templates(directory="templates")
 
 
 # Dependency
@@ -18,15 +24,19 @@ def get_db():
         db.close()
 
 
-# Root
+"""
+Root
+"""
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Todo API"}
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
-# Users
+"""
+Users
+"""
 
 
 @app.post("/users/", response_model=schemas.User)
@@ -66,7 +76,9 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-# Todo Items
+"""
+Todo Items
+"""
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.TodoItemCreate)

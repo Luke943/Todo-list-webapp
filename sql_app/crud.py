@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
-# Users
+"""
+Users
+"""
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -45,7 +47,9 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 
-# Todo Items
+"""
+Todo Items
+"""
 
 
 def create_user_todoitem(db: Session, item: schemas.TodoItemCreate, user_id: int):
@@ -63,7 +67,7 @@ def get_todoitems(db: Session, skip: int = 0, limit: int = 100):
 def update_todoitem(db: Session, item_id: int, item: schemas.TodoItemUpdate):
     db_item = db.query(models.TodoItem).filter(models.TodoItem.id == item_id).first()
     if db_item:
-        item_data = item.dict(exclude_unset=True)
+        item_data = item.model_dump(exclude_unset=True)
         for key, value in item_data.items():
             setattr(db_item, key, value)
         db.add(db_item)

@@ -20,13 +20,13 @@
         </h1><br><br>
 
         <grid class="ui two column centered grid">
-            <form class="ui form border-1" action="/add" method="post"><br>
+            <form class="ui form border-1" method="post"><br>
                 <label>Enter your login details</label><br><br>
                 <div class="field">
-                    <input type="text" name="title" placeholder="Username">
+                    <input type="text" name="username" placeholder="Username">
                 </div>
                 <div class="field">
-                    <input type="text" name="title" placeholder="Password"><br>
+                    <input type="text" name="password" placeholder="Password"><br>
                 </div><br>
                 <div class="ui grid">
                     <label>
@@ -38,7 +38,7 @@
                 </div><br><br>
                 <button class="fluid ui blue button" type="submit">Login</button><br>
                 <label>
-                    Not a member? <a href="#!">Register</a>
+                    Not a member? <a href="/register/">Register</a>
                 </label><br><br>
             </form>
         </grid>

@@ -10,7 +10,7 @@ Auto docs: http://localhost:8000/docs
 
 ## Further additions
 
-- Build frontend app (React?) to talk to API and pull/post/update data
+- Build frontend app to talk to API and pull/post/update data
 
 ## Inspiration
 

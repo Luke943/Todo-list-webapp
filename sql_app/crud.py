@@ -60,6 +60,16 @@ def create_user_todoitem(db: Session, item: schemas.TodoItemCreate, user_id: int
     return db_item
 
 
+def get_user_todoitems(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.TodoItem)
+        .filter(models.TodoItem.owner_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 def get_todoitems(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.TodoItem).offset(skip).limit(limit).all()
 

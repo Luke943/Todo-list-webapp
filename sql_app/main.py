@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -44,12 +44,12 @@ def read_register(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("register.html", {"request": request})
 
 
-@app.post("/login/{username}", response_class=RedirectResponse)
-def login_user(username: str, request: Request, db: Session = Depends(get_db)):
+@app.post("/login/", response_class=RedirectResponse)
+def login_user(username: str = Form(...), db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db=db, username=username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    return RedirectResponse(url=f"/users/{db_user.id}/items/")
+    return RedirectResponse(url=f"/users/{db_user.id}/items/", status_code=302)
 
 
 """

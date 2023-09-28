@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -48,8 +48,12 @@ def read_register(request: Request, db: Session = Depends(get_db)):
 def login_user(username: str = Form(...), db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db=db, username=username)
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return RedirectResponse(url=f"/users/{db_user.id}/items/", status_code=302)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return RedirectResponse(
+        url=f"/users/{db_user.id}/items/", status_code=status.HTTP_302_FOUND
+    )
 
 
 """
@@ -57,41 +61,41 @@ Users
 """
 
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_username(db=db, username=user.username)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
-    return crud.create_user(db=db, user=user)
+# @app.post("/users/", response_model=schemas.User)
+# def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+#     db_user = crud.get_user_by_username(db=db, username=user.username)
+#     if db_user:
+#         raise HTTPException(status_code=400, detail="Username already exists")
+#     return crud.create_user(db=db, user=user)
 
 
-@app.get("/users/", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_users(db=db, skip=skip, limit=limit)
+# @app.get("/users/", response_model=list[schemas.User])
+# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return crud.get_users(db=db, skip=skip, limit=limit)
 
 
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db=db, user_id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# @app.get("/users/{user_id}", response_model=schemas.User)
+# def read_user(user_id: int, db: Session = Depends(get_db)):
+#     db_user = crud.get_user(db=db, user_id=user_id)
+#     if not db_user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return db_user
 
 
-@app.put("/users/{user_id}", response_model=schemas.User)
-def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
-    db_user = crud.update_user(db=db, user_id=user_id, user=user)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# @app.put("/users/{user_id}", response_model=schemas.User)
+# def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
+#     db_user = crud.update_user(db=db, user_id=user_id, user=user)
+#     if not db_user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return db_user
 
 
-@app.delete("/users/{user_id}", response_model=schemas.User)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.delete_user(db=db, user_id=user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# @app.delete("/users/{user_id}", response_model=schemas.User)
+# def delete_user(user_id: int, db: Session = Depends(get_db)):
+#     db_user = crud.delete_user(db=db, user_id=user_id)
+#     if not db_user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return db_user
 
 
 """
@@ -99,11 +103,15 @@ Todo Items
 """
 
 
-@app.post("/users/{user_id}/items/", response_model=schemas.TodoItemCreate)
+@app.post("/users/{user_id}/items/", response_class=RedirectResponse)
 def create_todoitem_for_user(
-    user_id: int, item: schemas.TodoItemCreate, db: Session = Depends(get_db)
+    user_id: int, title: str = Form(...), db: Session = Depends(get_db)
 ):
-    return crud.create_user_todoitem(db=db, item=item, user_id=user_id)
+    item = schemas.TodoItemCreate(text=title)
+    crud.create_user_todoitem(db=db, item=item, user_id=user_id)
+    return RedirectResponse(
+        url=f"/users/{user_id}/items/", status_code=status.HTTP_302_FOUND
+    )
 
 
 @app.get("/users/{user_id}/items/", response_class=HTMLResponse)
@@ -120,24 +128,42 @@ def read_todoitems_for_user(
     )
 
 
-@app.get("/items/", response_model=list[schemas.TodoItem])
-def read_todoitems(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_todoitems(db=db, skip=skip, limit=limit)
+# @app.get("/items/", response_model=list[schemas.TodoItem])
+# def read_todoitems(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return crud.get_todoitems(db=db, skip=skip, limit=limit)
 
 
-@app.put("/items/{item_id}/", response_model=schemas.TodoItem)
-def update_todoitem(
-    item_id: int, item: schemas.TodoItemUpdate, db: Session = Depends(get_db)
+# @app.put("/items/{item_id}/", response_model=schemas.TodoItem)
+# def update_todoitem(
+#     item_id: int, item: schemas.TodoItemUpdate, db: Session = Depends(get_db)
+# ):
+#     db_item = crud.update_todoitem(db=db, item_id=item_id, item=item)
+#     if not db_item:
+#         raise HTTPException(status_code=404, detail="Todo item not found")
+#     return db_item
+
+
+@app.post("/items/{item_id}/", response_class=RedirectResponse)
+def todoitem_request_handler(
+    item_id: int, method: str = Form(...), db: Session = Depends(get_db)
 ):
-    db_item = crud.update_todoitem(db=db, item_id=item_id, item=item)
-    if not db_item:
-        raise HTTPException(status_code=404, detail="Todo item not found")
-    return db_item
+    if method == "_update":
+        pass
+    if method == "_delete":
+        return RedirectResponse(url=f"/items/delete/{item_id}/")
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="Method not found"
+    )
 
 
-@app.delete("/items/{item_id}/", response_model=schemas.TodoItem)
+@app.post("/items/delete/{item_id}/", response_class=RedirectResponse)
 def delete_todoitem(item_id: int, db: Session = Depends(get_db)):
     db_item = crud.delete_todoitem(db=db, item_id=item_id)
     if not db_item:
-        raise HTTPException(status_code=404, detail="Todo item not found")
-    return db_item
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Todo item not found"
+        )
+    user_id = db_item.owner_id
+    return RedirectResponse(
+        url=f"/users/{user_id}/items/", status_code=status.HTTP_302_FOUND
+    )

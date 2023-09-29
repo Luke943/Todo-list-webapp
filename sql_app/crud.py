@@ -86,6 +86,16 @@ def update_todoitem(db: Session, item_id: int, item: schemas.TodoItemUpdate):
     return db_item
 
 
+def update_status_todoitem(db: Session, item_id: int):
+    db_item = db.query(models.TodoItem).filter(models.TodoItem.id == item_id).first()
+    if db_item:
+        db_item.done = not db_item.done
+        db.add(db_item)
+        db.commit()
+        db.refresh(db_item)
+    return db_item
+
+
 def delete_todoitem(db: Session, item_id: int):
     db_item = db.query(models.TodoItem).filter(models.TodoItem.id == item_id).first()
     if db_item:

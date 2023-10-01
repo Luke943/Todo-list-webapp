@@ -34,6 +34,11 @@ def read_root():
     return RedirectResponse(url="/login/")
 
 
+"""
+Login
+"""
+
+
 @app.get("/login/", response_class=HTMLResponse)
 def read_login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -49,6 +54,11 @@ def login_user(username: str = Form(...), db: Session = Depends(get_db)):
     return RedirectResponse(
         url=f"/users/{db_user.id}/items/", status_code=status.HTTP_302_FOUND
     )
+
+
+"""
+Register
+"""
 
 
 @app.get("/register/", response_class=HTMLResponse)
@@ -111,9 +121,15 @@ def read_todoitems_for_user(
     limit: int = 100,
     db: Session = Depends(get_db),
 ):
+    user = crud.get_user(db, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     todo_items = crud.get_user_todoitems(db, user_id, skip, limit)
     return templates.TemplateResponse(
-        "items.html", {"request": request, "todo_list": todo_items}
+        "items.html",
+        {"request": request, "username": user.username, "todo_list": todo_items},
     )
 
 

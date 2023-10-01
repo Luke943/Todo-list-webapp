@@ -66,6 +66,18 @@ def read_register(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 
+@app.post("/register/", response_class=RedirectResponse)
+def create_user(username: str = Form(...), db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db, username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    user = schemas.UserCreate(username=username)
+    db_user = crud.create_user(db, user)
+    return RedirectResponse(
+        url=f"/users/{db_user.id}/items/", status_code=status.HTTP_302_FOUND
+    )
+
+
 """
 Users
 """

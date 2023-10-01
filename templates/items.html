@@ -38,6 +38,8 @@
             <button class="ui blue button" type="submit">Add</button>
         </form>
 
+        <div class="ui divider"></div>
+
         {% for todo in todo_list %}
         <form class="ui form message" method="post" action="/items/{{ todo.id }}/">
 

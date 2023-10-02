@@ -24,7 +24,7 @@
                     <i class="sign-out icon"></i> Logout
                 </div>
                 <div class="visible content">
-                    <i class="user circle outline icon"></i> {{ username }}
+                    <i class="user icon"></i> {{ username }}
                 </div>
             </button>
         </form>
@@ -32,7 +32,7 @@
         <br><br>
 
         <form class="ui form" method="post">
-            <div class="field">
+            <div class="ui field">
                 <input type="text" name="title" placeholder="Enter new task..."><br>
             </div>
             <button class="ui blue button" type="submit">Add</button>
@@ -44,9 +44,9 @@
         <form class="ui form message" method="post" action="/items/{{ todo.id }}/">
 
             {% if todo.done == False %}
-            <i class="circle outline floated left grey big icon"></i>
+            <i class="circle outline grey big icon"></i>
             {% else %}
-            <i class="check circle outline floated left green big icon"></i>
+            <i class="check circle outline green big icon"></i>
             {% endif %}
 
             {{ todo.text }}

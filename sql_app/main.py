@@ -48,12 +48,8 @@ def read_login(request: Request):
 def login_user(username: str = Form(...), db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, username)
     if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    return RedirectResponse(
-        url=f"/users/{db_user.id}/items/", status_code=status.HTTP_302_FOUND
-    )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    return RedirectResponse(f"/users/{db_user.id}/items/", status.HTTP_302_FOUND)
 
 
 """
@@ -70,12 +66,10 @@ def read_register(request: Request):
 def create_user(username: str = Form(...), db: Session = Depends(get_db)):
     db_user = crud.get_user_by_username(db, username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Username already exists")
     user = schemas.UserCreate(username=username)
     db_user = crud.create_user(db, user)
-    return RedirectResponse(
-        url=f"/users/{db_user.id}/items/", status_code=status.HTTP_302_FOUND
-    )
+    return RedirectResponse(f"/users/{db_user.id}/items/", status.HTTP_302_FOUND)
 
 
 """
@@ -129,16 +123,12 @@ Todo Items
 def read_todoitems_for_user(
     request: Request,
     user_id: int,
-    skip: int = 0,
-    limit: int = 100,
     db: Session = Depends(get_db),
 ):
     user = crud.get_user(db, user_id)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    todo_items = crud.get_user_todoitems(db, user_id, skip, limit)
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    todo_items = crud.get_user_todoitems(db, user_id)
     return templates.TemplateResponse(
         "items.html",
         {"request": request, "username": user.username, "todo_list": todo_items},
@@ -151,9 +141,7 @@ def create_todoitem_for_user(
 ):
     item = schemas.TodoItemCreate(text=title)
     crud.create_user_todoitem(db, item, user_id)
-    return RedirectResponse(
-        url=f"/users/{user_id}/items/", status_code=status.HTTP_302_FOUND
-    )
+    return RedirectResponse(f"/users/{user_id}/items/", status.HTTP_302_FOUND)
 
 
 # @app.get("/items/", response_model=list[schemas.TodoItem])
@@ -164,35 +152,25 @@ def create_todoitem_for_user(
 @app.post("/items/{item_id}/")
 def todoitem_request_handler(item_id: int, method: str = Form(...)):
     if method == "_delete":
-        return RedirectResponse(url=f"/items/{item_id}/delete/")
+        return RedirectResponse(f"/items/{item_id}/delete/")
     if method == "_update":
-        return RedirectResponse(url=f"/items/{item_id}/update/")
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="Method not found"
-    )
+        return RedirectResponse(f"/items/{item_id}/update/")
+    raise HTTPException(status.HTTP_400_BAD_REQUEST, "Method not found")
 
 
 @app.post("/items/{item_id}/update/", response_class=RedirectResponse)
 def update_todoitem(item_id: int, db: Session = Depends(get_db)):
     db_item = crud.update_status_todoitem(db, item_id)
     if not db_item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo item not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Todo item not found")
     user_id = db_item.owner_id
-    return RedirectResponse(
-        url=f"/users/{user_id}/items/", status_code=status.HTTP_302_FOUND
-    )
+    return RedirectResponse(f"/users/{user_id}/items/", status.HTTP_302_FOUND)
 
 
 @app.post("/items/{item_id}/delete/", response_class=RedirectResponse)
 def delete_todoitem(item_id: int, db: Session = Depends(get_db)):
     db_item = crud.delete_todoitem(db, item_id)
     if not db_item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo item not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Todo item not found")
     user_id = db_item.owner_id
-    return RedirectResponse(
-        url=f"/users/{user_id}/items/", status_code=status.HTTP_302_FOUND
-    )
+    return RedirectResponse(f"/users/{user_id}/items/", status.HTTP_302_FOUND)

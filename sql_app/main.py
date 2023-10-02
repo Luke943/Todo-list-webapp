@@ -123,6 +123,7 @@ Todo Items
 def read_todoitems_for_user(
     request: Request,
     user_id: int,
+    filter: bool = False,
     db: Session = Depends(get_db),
 ):
     user = crud.get_user(db, user_id)
@@ -131,7 +132,12 @@ def read_todoitems_for_user(
     todo_items = crud.get_user_todoitems(db, user_id)
     return templates.TemplateResponse(
         "items.html",
-        {"request": request, "username": user.username, "todo_list": todo_items},
+        {
+            "request": request,
+            "username": user.username,
+            "todo_list": todo_items,
+            "filter": filter,
+        },
     )
 
 

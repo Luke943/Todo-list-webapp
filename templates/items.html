@@ -40,7 +40,22 @@
 
         <div class="ui divider"></div>
 
+        <form class="ui right floated buttons" method="get">
+            <button class="ui {% if filter == False %}positive{% endif %} button" type="submit" name="filter"
+                value="False">
+                Show all
+            </button>
+            <div class="or"></div>
+            <button class="ui {% if filter == True %}positive{% endif %} button" type="submit" name="filter"
+                value="True">
+                To do only
+            </button>
+        </form>
+
+        <br><br>
+
         {% for todo in todo_list %}
+        {% if todo.done == False or filter == False %}
         <form class="ui form message" method="post" action="/items/{{ todo.id }}/">
 
             {% if todo.done == False %}
@@ -77,6 +92,7 @@
             {% endif %}
 
         </form>
+        {% endif %}
         {% endfor %}
     </div>
 </body>

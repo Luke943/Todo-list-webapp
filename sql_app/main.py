@@ -10,7 +10,6 @@ from .database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/images", StaticFiles(directory="images"), name="images")
 templates = Jinja2Templates(directory="templates")
 
@@ -73,48 +72,6 @@ def create_user(username: str = Form(...), db: Session = Depends(get_db)):
 
 
 """
-Users
-"""
-
-
-# @app.post("/users/", response_model=schemas.User)
-# def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-#     db_user = crud.get_user_by_username(db=db, username=user.username)
-#     if db_user:
-#         raise HTTPException(status_code=400, detail="Username already exists")
-#     return crud.create_user(db=db, user=user)
-
-
-# @app.get("/users/", response_model=list[schemas.User])
-# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return crud.get_users(db=db, skip=skip, limit=limit)
-
-
-# @app.get("/users/{user_id}", response_model=schemas.User)
-# def read_user(user_id: int, db: Session = Depends(get_db)):
-#     db_user = crud.get_user(db=db, user_id=user_id)
-#     if not db_user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return db_user
-
-
-# @app.put("/users/{user_id}", response_model=schemas.User)
-# def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
-#     db_user = crud.update_user(db=db, user_id=user_id, user=user)
-#     if not db_user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return db_user
-
-
-# @app.delete("/users/{user_id}", response_model=schemas.User)
-# def delete_user(user_id: int, db: Session = Depends(get_db)):
-#     db_user = crud.delete_user(db=db, user_id=user_id)
-#     if not db_user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return db_user
-
-
-"""
 Todo Items
 """
 
@@ -148,11 +105,6 @@ def create_todoitem_for_user(
     item = schemas.TodoItemCreate(text=title)
     crud.create_user_todoitem(db, item, user_id)
     return RedirectResponse(f"/users/{user_id}/items/", status.HTTP_302_FOUND)
-
-
-# @app.get("/items/", response_model=list[schemas.TodoItem])
-# def read_todoitems(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return crud.get_todoitems(db=db, skip=skip, limit=limit)
 
 
 @app.post("/items/{item_id}/")

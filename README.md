@@ -12,6 +12,9 @@ Auto docs: http://localhost:8000/docs
 
 - Build frontend app to talk to API and pull/post/update data
 
+- Sort out filter (so it doesn't reset after any post request)
+- Implement password system
+
 ## Inspiration
 
 Project idea from [Travis Media](https://www.youtube.com/watch?v=cbASjoZZGIw).
